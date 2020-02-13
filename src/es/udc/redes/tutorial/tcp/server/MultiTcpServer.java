@@ -4,9 +4,9 @@ import java.net.*;
 import java.io.*;
 
 /**
- * Monothread TCP echo server.
+ * Multithread TCP echo server.
  */
-public class TcpServer {
+public class MultiTcpServer {
 
     public static void main(String argv[]) {
         if (argv.length != 1) {
@@ -15,9 +15,6 @@ public class TcpServer {
         }
 
         ServerSocket socketServer = null;
-        Socket socketClient = null;
-        BufferedReader breader = null;
-        PrintWriter pwriter = null;
 
         int port = Integer.parseInt(argv[0]);
 
@@ -29,37 +26,23 @@ public class TcpServer {
 
             while (true) {
                 // Wait for connections
-                socketClient = socketServer.accept();
-                // Set the input channel
-                breader = new BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-                // Set the output channel
-                pwriter = new PrintWriter(socketClient.getOutputStream(), true);
-                // Receive the client message
-                String mensaje = breader.readLine();
-                // Send response to the client
-                pwriter.println(mensaje);
-                // Close the streams
-                if (breader != null) {
-                    breader.close();
-                }
-
-                if (pwriter != null) {
-                    pwriter.close();
-                }
+                Socket socketClient = socketServer.accept();
+                // Create a ServerThread object, with the new connection as parameter
+                ServerThread serverThread = new ServerThread(socketClient);
+                // Initiate thread using the start() method
+                serverThread.start();
             }
 
         } catch (SocketTimeoutException e) {
             System.err.println("Nothing received in 300 secs ");
         } catch (IOException e) {
             System.err.println("Error: " + e.getMessage());
+            throw new RuntimeException(e);
         } finally {
 //Close the socket
             try {
                 if (socketServer != null) {
                     socketServer.close();
-                }
-                if (socketClient != null) {
-                    socketClient.close();
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

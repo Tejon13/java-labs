@@ -14,7 +14,7 @@ public class UdpClient {
         }
         DatagramSocket sDatagram = null;
         try {
-            
+
             // Create a non connection-oriented socket
             // (use any available port)
             sDatagram = new DatagramSocket();
