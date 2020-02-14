@@ -13,7 +13,9 @@ public class TcpClient {
             System.err.println("Format: es.udc.redes.tutorial.tcp.client.TcpClient <server_address> <port_number> <message>");
             System.exit(-1);
         }
+
         Socket socket = null;
+
         try {
             // Obtains the server IP address
             InetAddress serverAddress = InetAddress.getByName(argv[0]);
@@ -25,11 +27,9 @@ public class TcpClient {
             socket = new Socket(serverAddress, serverPort);
             // Set a max. Timeout of 300 secs
             socket.setSoTimeout(300000);
-            System.out.println("CLIENT: Connection established with "
-                    + serverAddress.toString() + " port " + serverPort);
+            System.out.println("CLIENT: Connection established with " + serverAddress.toString() + " port " + serverPort);
             // Set the input channel
-            BufferedReader sInput = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream()));
+            BufferedReader sInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // Set the output channel
             PrintWriter sOutput = new PrintWriter(socket.getOutputStream(), true);
             System.out.println("CLIENT: Sending " + message);

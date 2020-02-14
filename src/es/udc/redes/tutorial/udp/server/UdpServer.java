@@ -15,6 +15,7 @@ public class UdpServer {
         }
 
         DatagramSocket datasocket = null;
+
         int port = Integer.parseInt(argv[0]);
 
         try {

@@ -12,7 +12,9 @@ public class UdpClient {
             System.err.println("Format: es.udc.redes.tutorial.udp.client.UdpClient <server_address> <port_number> <message>");
             System.exit(-1);
         }
+
         DatagramSocket sDatagram = null;
+
         try {
 
             // Create a non connection-oriented socket
@@ -27,23 +29,16 @@ public class UdpClient {
             // Obtain message from third argument
             String message = argv[2];
             // Prepare the datagram
-            DatagramPacket dgramSent = new DatagramPacket(message.getBytes(),
-                    message.getBytes().length, serverAddress, serverPort);
+            DatagramPacket dgramSent = new DatagramPacket(message.getBytes(), message.getBytes().length, serverAddress, serverPort);
             // Send the datagram
             sDatagram.send(dgramSent);
-            System.out.println("CLIENT: Sending "
-                    + new String(dgramSent.getData()) + " to "
-                    + dgramSent.getAddress().toString() + ":"
-                    + dgramSent.getPort());
+            System.out.println("CLIENT: Sending " + new String(dgramSent.getData()) + " to " + dgramSent.getAddress().toString() + ":" + dgramSent.getPort());
             // Prepare datagram for data reception
             byte array[] = new byte[1024];
             DatagramPacket dgramRec = new DatagramPacket(array, array.length);
             // Receive the message
             sDatagram.receive(dgramRec);
-            System.out.println("CLIENT: Received "
-                    + new String(dgramRec.getData(), 0, dgramRec.getLength())
-                    + " from " + dgramRec.getAddress().toString() + ":"
-                    + dgramRec.getPort());
+            System.out.println("CLIENT: Received " + new String(dgramRec.getData(), 0, dgramRec.getLength()) + " from " + dgramRec.getAddress().toString() + ":" + dgramRec.getPort());
         } catch (SocketTimeoutException e) {
             System.err.println("Nothing received in 300 secs");
         } catch (Exception e) {
