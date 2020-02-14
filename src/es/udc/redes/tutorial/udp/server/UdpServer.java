@@ -8,16 +8,15 @@ import java.net.*;
  */
 public class UdpServer {
 
-    private static DatagramSocket datasocket;
-
     public static void main(String argv[]) {
         if (argv.length != 1) {
             System.err.println("Format: es.udc.redes.tutorial.udp.server.UdpServer <port_number>");
             System.exit(-1);
         }
-        
-        int port = Integer.parseInt(argv [0]);
-        
+
+        DatagramSocket datasocket = null;
+        int port = Integer.parseInt(argv[0]);
+
         try {
             // Create a server socket
             datasocket = new DatagramSocket(port);
@@ -32,7 +31,7 @@ public class UdpServer {
                 // Receive the message
                 datasocket.receive(rdatapacket);
                 // Prepare datagram to send response
-                DatagramPacket sdatapacket = new DatagramPacket(paquete, paquete.length);
+                DatagramPacket sdatapacket = new DatagramPacket(paquete, paquete.length, rdatapacket.getAddress(), rdatapacket.getPort());
                 // Send response
                 datasocket.send(sdatapacket);
             }

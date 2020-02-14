@@ -10,8 +10,8 @@ public class Copy {
         FileOutputStream out = null;
 
         try {
-            in = new FileInputStream(args [0]);
-            out = new FileOutputStream(args [1]);
+            in = new FileInputStream(args[0]);
+            out = new FileOutputStream(args[1]);
             int c;
 
             while ((c = in.read()) != -1) {
