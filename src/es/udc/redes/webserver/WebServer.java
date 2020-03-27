@@ -32,7 +32,7 @@ public class WebServer {
         Properties config = new Properties();
 
         try {
-            input = new FileInputStream("resources/config.properties");
+            input = new FileInputStream("p1/resources/config.properties");
             config.load(input);
             PORT = Integer.parseInt(config.getProperty("PORT"));
             DIRECTORY = config.getProperty("DIRECTORY");
@@ -43,7 +43,7 @@ public class WebServer {
             socketServer.setSoTimeout(300000);
             while (true) {
                 Socket socketClient = socketServer.accept();
-                ServerThread serverThread = new ServerThread(socketClient, ALLOW);
+                ServerThread serverThread = new ServerThread(socketClient, DIRECTORY, DIRECTORY_INDEX, ALLOW);
                 serverThread.start();
             }
         } catch (SocketTimeoutException e) {

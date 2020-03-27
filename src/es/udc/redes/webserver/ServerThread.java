@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -26,12 +27,29 @@ public class ServerThread extends Thread {
     private Code code;
     private Date date;
     private File file = null;
-    private final Socket socket;
-    private final Boolean permiso;
+    private String dir_codes;
+    private String dir_archives;
 
-    public ServerThread(Socket s, Boolean a) {
+    private final SimpleDateFormat formatoFecha = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
+
+    private final Socket socket;
+    private final String DIRECTORY;
+    private final String DIRECTORY_INDEX;
+    private final Boolean ALLOW;
+
+    /**
+     * ServerThread's constructor.
+     *
+     * @param s - Socket's value
+     * @param d - DIRECTORY's value
+     * @param i - DIRECTORY_INDEX's value
+     * @param a - ALLOW's value
+     */
+    public ServerThread(Socket s, String d, String i, Boolean a) {
         this.socket = s;
-        this.permiso = a;
+        this.DIRECTORY = d;
+        this.DIRECTORY_INDEX = i;
+        this.ALLOW = a;
     }
 
     /**
@@ -39,6 +57,9 @@ public class ServerThread extends Thread {
      */
     @Override
     public void run() {
+
+        dir_codes = DIRECTORY + "/codes";
+        dir_archives = DIRECTORY + "/archives";
 
         BufferedReader reader = null;
         PrintWriter writer = null;
@@ -51,6 +72,20 @@ public class ServerThread extends Thread {
             dataOut = new BufferedOutputStream(socket.getOutputStream());
 
             String msg = reader.readLine();
+            String header = null;
+            String aux = reader.readLine();
+
+            if (aux != null) {
+                while (!aux.equals("")) {
+                    if (aux.contains("If-Modified-Since")) {
+                        header = aux;
+                        break;
+                    } else {
+                        aux = reader.readLine();
+                    }
+                }
+            }
+
             if (msg != null) {
                 StringTokenizer parse = new StringTokenizer(msg);
                 String method = parse.nextToken().toUpperCase();
@@ -61,7 +96,20 @@ public class ServerThread extends Thread {
                     printHeader(writer, dataOut, "", fileRequest);
                 }
                 if (method.equals("GET")) {
-                    printHeader(writer, dataOut, method, fileRequest);
+                    if (header != null && header.contains("If-Modified-Since")) {
+                        File reload = new File(dir_archives + fileRequest);
+                        String stringIfMod = header.substring(19);
+                        Date ifModDate = parseDate(stringIfMod);
+                        Date lastDate = parseDate(formatDate((int) reload.lastModified()));
+                        if (ifModDate.after(lastDate) || ifModDate.equals(lastDate)) {
+                            code = Code.NOT_MODIFIED;
+                            printHeader(writer, dataOut, "", fileRequest);
+                        } else {
+                            printHeader(writer, dataOut, method, fileRequest);
+                        }
+                    } else {
+                        printHeader(writer, dataOut, method, fileRequest);
+                    }
                 }
                 if (method.equals("HEAD")) {
                     printHeader(writer, dataOut, method, fileRequest);
@@ -108,17 +156,23 @@ public class ServerThread extends Thread {
      * @throws IOException
      */
     private void printHeader(PrintWriter printer, OutputStream dataOut, String metodo, String content) throws IOException {
-        File requested = new File("resources/archives" + content);
+        File requested = new File(dir_archives + content);
 
-        if (code == Code.NOT_IMPLEMENTED) {
-            file = new File("resources/codes/501.html");
+        if (code == Code.NOT_IMPLEMENTED || code == Code.NOT_MODIFIED) {
+            switch (code) {
+                case NOT_IMPLEMENTED:
+                    file = new File(dir_codes + "/501.html");
+                    break;
+                case NOT_MODIFIED:
+                    file = new File(dir_codes + "/304.html");
+            }
         } else {
             if (requested.exists()) {
                 code = Code.OK;
-                file = new File("resources/archives" + content);
+                file = new File(dir_archives + content);
             } else {
                 code = Code.NOT_FOUND;
-                file = new File("resources/codes/404.html");
+                file = new File(dir_codes + "/404.html");
             }
         }
 
@@ -142,6 +196,8 @@ public class ServerThread extends Thread {
                     break;
                 case "HEAD":
                     break;
+                default:
+                    break;
             }
         } else {
             dataOut.write(data, 0, length);
@@ -159,8 +215,8 @@ public class ServerThread extends Thread {
      * @param length - file's length
      */
     private void activity(String metodo, String content, int length) {
-        File access = new File("resources/access/access.log");
-        File errors = new File("resources/errors/errors.log");
+        File access = new File(DIRECTORY + "/access.log");
+        File errors = new File(DIRECTORY + "/errors.log");
         PrintWriter registrar;
 
         try {
@@ -173,8 +229,7 @@ public class ServerThread extends Thread {
                     registrar.println("IP cliente: " + socket.getInetAddress().toString());
                     registrar.println("Fecha y hora de petición: " + date);
                     registrar.println("Código de estado: " + code);
-                    registrar.println("Tamaño: " + length);
-                    registrar.println("");
+                    registrar.println("Tamaño: " + length + " byte(s)");
                     registrar.println("-------------------------");
                     registrar.println("");
                     break;
@@ -186,8 +241,7 @@ public class ServerThread extends Thread {
                     registrar.println("IP cliente: " + socket.getInetAddress().toString());
                     registrar.println("Fecha y hora de petición: " + date);
                     registrar.println("Código de estado: " + code);
-                    registrar.println("Tamaño: " + length);
-                    registrar.println("");
+                    registrar.println("Tamaño: " + length + " byte(s)");
                     registrar.println("-------------------------");
                     registrar.println("");
                     break;
@@ -199,7 +253,6 @@ public class ServerThread extends Thread {
                     registrar.println("IP cliente: " + socket.getInetAddress().toString());
                     registrar.println("Fecha y hora de error: " + date);
                     registrar.println("Código de error: " + code);
-                    registrar.println("");
                     registrar.println("-------------------------");
                     registrar.println("");
                     break;
@@ -211,12 +264,12 @@ public class ServerThread extends Thread {
                     registrar.println("IP cliente: " + socket.getInetAddress().toString());
                     registrar.println("Fecha y hora de error: " + date);
                     registrar.println("Código de error: " + code);
-                    registrar.println("");
                     registrar.println("-------------------------");
                     registrar.println("");
                     break;
             }
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException fnfe) {
+            System.out.println(fnfe);
         }
     }
 
@@ -224,11 +277,26 @@ public class ServerThread extends Thread {
      * Gives appropriate format to the object new Date().
      *
      * @param seconds - time to format
-     * @return simpleDate.format(seconds) - formatted time
+     * @return formatoFecha.format(seconds) - formatted time
      */
     private String formatDate(int seconds) {
-        SimpleDateFormat simpleDate = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
-        return simpleDate.format(seconds);
+        return formatoFecha.format(seconds);
+    }
+
+    /**
+     * Changes from String to Date().
+     *
+     * @param fecha - time to modify
+     * @return parsedDate - time in Date() format
+     */
+    private Date parseDate(String fecha) {
+        Date parsedDate = null;
+        try {
+            parsedDate = formatoFecha.parse(fecha);
+        } catch (ParseException ex) {
+            System.out.println(ex);
+        }
+        return parsedDate;
     }
 
     /**
