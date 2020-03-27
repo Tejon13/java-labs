@@ -1,5 +1,10 @@
 package es.udc.redes.webserver;
 
+/**
+ * Enumeration to identify each HTTP Code.
+ *
+ * @author Íker
+ */
 public enum Code {
 
     OK("200 OK"),
@@ -11,10 +16,20 @@ public enum Code {
 
     private final String estado;
 
+    /**
+     * Enumeration's constructor.
+     *
+     * @param code - HTTP Code's meaning
+     */
     private Code(String code) {
         this.estado = code;
     }
 
+    /**
+     * HTTP Code's getter.
+     *
+     * @return estado - HTTP Code's meaning
+     */
     public String getEstado() {
         return estado;
     }

@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -14,17 +16,27 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+/**
+ * This class manage the server's Threads.
+ *
+ * @author Íker
+ */
 public class ServerThread extends Thread {
 
     private Code code;
     private Date date;
     private File file = null;
     private final Socket socket;
+    private final Boolean permiso;
 
-    public ServerThread(Socket s) {
+    public ServerThread(Socket s, Boolean a) {
         this.socket = s;
+        this.permiso = a;
     }
 
+    /**
+     * Executes the echo server connection.
+     */
     @Override
     public void run() {
 
@@ -49,10 +61,10 @@ public class ServerThread extends Thread {
                     printHeader(writer, dataOut, "", fileRequest);
                 }
                 if (method.equals("GET")) {
-                    printHeader(writer, dataOut, "GET", fileRequest);
+                    printHeader(writer, dataOut, method, fileRequest);
                 }
                 if (method.equals("HEAD")) {
-                    printHeader(writer, dataOut, "HEAD", fileRequest);
+                    printHeader(writer, dataOut, method, fileRequest);
                 }
             }
             if (reader != null) {
@@ -86,35 +98,27 @@ public class ServerThread extends Thread {
 
     }
 
+    /**
+     * Prints all HTTP Headers.
+     *
+     * @param printer - object that prints the Header
+     * @param dataOut - object that sends the file to the server
+     * @param metodo - HTTP method
+     * @param content - file requested by the server
+     * @throws IOException
+     */
     private void printHeader(PrintWriter printer, OutputStream dataOut, String metodo, String content) throws IOException {
+        File requested = new File("resources/archives" + content);
+
         if (code == Code.NOT_IMPLEMENTED) {
             file = new File("resources/codes/501.html");
         } else {
-            switch (content) {
-                case "/fic.png":
-                    code = Code.OK;
-                    file = new File("resources/archives/fic.png");
-                    break;
-                case "/index.html":
-                    code = Code.OK;
-                    file = new File("resources/archives/index.html");
-                    break;
-                case "/license.txt":
-                    code = Code.OK;
-                    file = new File("resources/archives/LICENSE.txt");
-                    break;
-                case "/saludo.html":
-                    code = Code.OK;
-                    file = new File("resources/archives/saludo.html");
-                    break;
-                case "/udc.gif":
-                    code = Code.OK;
-                    file = new File("resources/archives/udc.gif");
-                    break;
-                default:
-                    code = Code.NOT_FOUND;
-                    file = new File("resources/codes/404.html");
-                    break;
+            if (requested.exists()) {
+                code = Code.OK;
+                file = new File("resources/archives" + content);
+            } else {
+                code = Code.NOT_FOUND;
+                file = new File("resources/codes/404.html");
             }
         }
 
@@ -143,13 +147,98 @@ public class ServerThread extends Thread {
             dataOut.write(data, 0, length);
         }
         dataOut.flush();
+
+        activity(metodo, content, length);
     }
 
+    /**
+     * Records server's activity in it's corresponding .log.
+     *
+     * @param metodo - HTTP method
+     * @param content - file requested by the server
+     * @param length - file's length
+     */
+    private void activity(String metodo, String content, int length) {
+        File access = new File("resources/access/access.log");
+        File errors = new File("resources/errors/errors.log");
+        PrintWriter registrar;
+
+        try {
+            switch (code.getEstado().charAt(0)) {
+                case '2':
+                    registrar = new PrintWriter(new FileOutputStream(access, true), true);
+
+                    registrar.println("------ A C C E S S ------");
+                    registrar.println("Petición de acceso: " + metodo + " " + content);
+                    registrar.println("IP cliente: " + socket.getInetAddress().toString());
+                    registrar.println("Fecha y hora de petición: " + date);
+                    registrar.println("Código de estado: " + code);
+                    registrar.println("Tamaño: " + length);
+                    registrar.println("");
+                    registrar.println("-------------------------");
+                    registrar.println("");
+                    break;
+                case '3':
+                    registrar = new PrintWriter(new FileOutputStream(access, true), true);
+
+                    registrar.println("------ A C C E S S ------");
+                    registrar.println("Petición de acceso: " + metodo + " " + content);
+                    registrar.println("IP cliente: " + socket.getInetAddress().toString());
+                    registrar.println("Fecha y hora de petición: " + date);
+                    registrar.println("Código de estado: " + code);
+                    registrar.println("Tamaño: " + length);
+                    registrar.println("");
+                    registrar.println("-------------------------");
+                    registrar.println("");
+                    break;
+                case '4':
+                    registrar = new PrintWriter(new FileOutputStream(errors, true), true);
+
+                    registrar.println("------- E R R O R -------");
+                    registrar.println("Petición errónea: " + metodo + " " + content);
+                    registrar.println("IP cliente: " + socket.getInetAddress().toString());
+                    registrar.println("Fecha y hora de error: " + date);
+                    registrar.println("Código de error: " + code);
+                    registrar.println("");
+                    registrar.println("-------------------------");
+                    registrar.println("");
+                    break;
+                case '5':
+                    registrar = new PrintWriter(new FileOutputStream(errors, true), true);
+
+                    registrar.println("------- E R R O R -------");
+                    registrar.println("Petición errónea: " + metodo + " " + content);
+                    registrar.println("IP cliente: " + socket.getInetAddress().toString());
+                    registrar.println("Fecha y hora de error: " + date);
+                    registrar.println("Código de error: " + code);
+                    registrar.println("");
+                    registrar.println("-------------------------");
+                    registrar.println("");
+                    break;
+            }
+        } catch (FileNotFoundException e) {
+        }
+    }
+
+    /**
+     * Gives appropriate format to the object new Date().
+     *
+     * @param seconds - time to format
+     * @return simpleDate.format(seconds) - formatted time
+     */
     private String formatDate(int seconds) {
         SimpleDateFormat simpleDate = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
         return simpleDate.format(seconds);
     }
 
+    /**
+     * Reads data from a file to send later to the server.
+     *
+     * @param file - file to read
+     * @param lentgh - file's lentgh
+     * @return data - array with all file's data
+     * @throws IOException
+     */
     private byte[] readerData(File file, int lentgh) throws IOException {
         FileInputStream input = null;
         byte[] data = new byte[lentgh];
@@ -165,6 +254,12 @@ public class ServerThread extends Thread {
         return data;
     }
 
+    /**
+     * Type's getter which server's requested for.
+     *
+     * @param fileRequest - file to get the type
+     * @return type - String with file's type
+     */
     private String getType(File fileRequest) {
         String requested = fileRequest.getName();
         String type = "application/octet-stream";

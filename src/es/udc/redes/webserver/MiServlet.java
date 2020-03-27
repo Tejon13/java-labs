@@ -9,11 +9,6 @@ public class MiServlet implements MiniServlet {
 
     }
 
-    /**
-     *
-     * @param parameters
-     * @return
-     */
     @Override
     public String doGet(Map<String, String> parameters) {
         String nombre = parameters.get("nombre");
