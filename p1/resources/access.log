@@ -78,3 +78,83 @@ Código de estado: NOT_MODIFIED
 Tamaño: 483 byte(s)
 -------------------------
 
+------ A C C E S S ------
+Petición de acceso: GET /index.html
+IP cliente: /0:0:0:0:0:0:0:1
+Fecha y hora de petición: Fri Mar 27 18:21:11 CET 2020
+Código de estado: OK
+Tamaño: 216 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso:  /index.html
+IP cliente: /0:0:0:0:0:0:0:1
+Fecha y hora de petición: Fri Mar 27 18:21:21 CET 2020
+Código de estado: NOT_MODIFIED
+Tamaño: 483 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: GET /license.txt
+IP cliente: /0:0:0:0:0:0:0:1
+Fecha y hora de petición: Fri Mar 27 18:21:51 CET 2020
+Código de estado: OK
+Tamaño: 579 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: GET /index.html
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 216 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: GET /index.html
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 216 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: GET /udc.gif
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 4250 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: GET /fic.png
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 13320 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: GET /license.txt
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 579 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: HEAD /index.html
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 216 byte(s)
+-------------------------
+
+------ A C C E S S ------
+Petición de acceso: HEAD /udc.gif
+IP cliente: /127.0.0.1
+Fecha y hora de petición: Fri Mar 27 18:24:15 CET 2020
+Código de estado: OK
+Tamaño: 4250 byte(s)
+-------------------------
+

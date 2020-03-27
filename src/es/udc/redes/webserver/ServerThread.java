@@ -182,7 +182,7 @@ public class ServerThread extends Thread {
 
         printer.println("HTTP/1.0 " + code.getEstado());
         printer.println("Date: " + date);
-        printer.println("Server: ");
+        printer.println("Server: WebServer/1.0 [Windows]");
         printer.println("Last-Modified: " + formatDate((int) file.lastModified()));
         printer.println("Content-Length: " + file.length());
         printer.println("Content-Type: " + getType(file));

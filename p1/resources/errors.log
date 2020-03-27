@@ -33,3 +33,31 @@ Fecha y hora de error: Fri Mar 27 17:01:45 CET 2020
 Código de error: NOT_FOUND
 -------------------------
 
+------- E R R O R -------
+Petición errónea: GET /iker.txt
+IP cliente: /0:0:0:0:0:0:0:1
+Fecha y hora de error: Fri Mar 27 18:22:45 CET 2020
+Código de error: NOT_FOUND
+-------------------------
+
+------- E R R O R -------
+Petición errónea:  /index.html
+IP cliente: /127.0.0.1
+Fecha y hora de error: Fri Mar 27 18:24:15 CET 2020
+Código de error: NOT_IMPLEMENTED
+-------------------------
+
+------- E R R O R -------
+Petición errónea: GET /notfound.html
+IP cliente: /127.0.0.1
+Fecha y hora de error: Fri Mar 27 18:24:15 CET 2020
+Código de error: NOT_FOUND
+-------------------------
+
+------- E R R O R -------
+Petición errónea: HEAD /notfound.html
+IP cliente: /127.0.0.1
+Fecha y hora de error: Fri Mar 27 18:24:15 CET 2020
+Código de error: NOT_FOUND
+-------------------------
+

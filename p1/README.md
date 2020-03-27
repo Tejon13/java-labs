@@ -30,4 +30,4 @@ System.getProperty("user.dir"); //NetBeans IDE 8.2's default directory.
 
 ## Correción
 
-Están implementadas las 2 iteraciones.
+Están implementadas la iteración 1 y la iteración 2.
