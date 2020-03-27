@@ -1,4 +1,4 @@
-# P1: Implementación de un Servidor Web
+# Práctica 1: Implementación de un Servidor Web
 
 Práctica realizada por Íker García Calviño <<iker.gcalvino@udc.es>>.
 
